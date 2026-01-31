@@ -77,7 +77,7 @@ STATIC AvbIOResult GetHandleInfo(const char *Partition, HandleInfo *HandleInfo)
 		return AVB_IO_RESULT_ERROR_IO;
 	}
 
-	AsciiStrToUnicodeStr(Partition, UnicodePartition);
+	AsciiStrToUnicodeStrS(Partition, UnicodePartition, MAX_GPT_NAME_SIZE);
 
 	HandleFilter.RootDeviceType = NULL;
 	HandleFilter.PartitionLabel = NULL;
@@ -561,7 +561,7 @@ AvbIOResult AvbGetUniqueGuidForPartition(AvbOps *Ops, const char *PartitionName,
 		return AVB_IO_RESULT_ERROR_IO;
 	}
 
-	AsciiStrToUnicodeStr(PartitionName, UnicodePartition);
+	AsciiStrToUnicodeStrS(PartitionName, UnicodePartition, MAX_GPT_NAME_SIZE);
 
 	if (!(StrnCmp(UnicodePartition, PartEntry->PartitionName,
 	              StrLen(UnicodePartition)))) {

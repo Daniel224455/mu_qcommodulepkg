@@ -47,6 +47,7 @@
   FLASH_DEFINITION               = QcomModulePkg/QcomModulePkg.fdf
 
 [LibraryClasses.common]
+  ArmLib|ArmPkg/Library/ArmLib/ArmBaseLib.inf
   DebugLib|MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf
   DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
@@ -74,14 +75,6 @@
   UefiDriverEntryPoint|MdePkg/Library/UefiDriverEntryPoint/UefiDriverEntryPoint.inf
   PerformanceLib|MdeModulePkg/Library/DxePerformanceLib/DxePerformanceLib.inf
   AvbLib|QcomModulePkg/Library/avb/AvbLib.inf
-
-[LibraryClasses.ARM]
-  ArmLib|ArmPkg/Library/ArmLib/ArmBaseLib.inf
-  NULL|ArmPkg/Library/CompilerIntrinsicsLib/CompilerIntrinsicsLib.inf
-
-[LibraryClasses.AARCH64]
-  ArmLib|ArmPkg/Library/ArmLib/ArmBaseLib.inf
-  NULL|ArmPkg/Library/CompilerIntrinsicsLib/CompilerIntrinsicsLib.inf
 
 [LibraryClasses.common.UEFI_APPLICATION]
   ReportStatusCodeLib|MdeModulePkg/Library/DxeReportStatusCodeLib/DxeReportStatusCodeLib.inf
@@ -145,9 +138,9 @@
 # ASSERT_BREAKPOINT_ENABLED  0x10
 # ASSERT_DEADLOOP_ENABLED    0x20
 
-  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x3f
-  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0xFFFFFFFF
-  gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x0f
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x2f
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000042
+  gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x06
 
 ################################################################################
 #
@@ -158,6 +151,7 @@
 
 	QcomModulePkg/Application/LinuxLoader/LinuxLoader.inf {
 		<LibraryClasses>
+            BaseMemoryLib|MdePkg/Library/BaseMemoryLib/BaseMemoryLib.inf
 			DxeServicesTableLib|MdePkg/Library/DxeServicesTableLib/DxeServicesTableLib.inf
 			UefiLib|MdePkg/Library/UefiLib/UefiLib.inf
 			UefiApplicationEntryPoint|MdePkg/Library/UefiApplicationEntryPoint/UefiApplicationEntryPoint.inf
@@ -173,7 +167,7 @@
 
 			FdtLib|EmbeddedPkg/Library/FdtLib/FdtLib.inf
 			LibUfdt|QcomModulePkg/Library/LibUfdt/LibUfdt.inf
-			ArmSmcLib|MdePkg/Library/ArmSmcLib/ArmSmcLib.inf
+			ArmSmcLib|ArmPkg/Library/ArmSmcLib/ArmSmcLib.inf
 			BootLib|QcomModulePkg/Library/BootLib/BootLib.inf
 			StackCanary|QcomModulePkg/Library/StackCanary/StackCanary.inf
 			FastbootLib|QcomModulePkg/Library/FastbootLib/FastbootLib.inf

@@ -40,7 +40,6 @@
 #include <Library/CacheMaintenanceLib.h>
 #include <Library/DebugLib.h>
 #include <Library/DevicePathLib.h>
-#include <Library/EfiFileLib.h>
 #include <Library/IoLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/PcdLib.h>
@@ -101,7 +100,9 @@
 #define PARTITIONED_TYPE_GPT 0x02
 
 #define ZERO 0
+#ifndef ARRAY_SIZE
 #define ARRAY_SIZE(a) sizeof (a) / sizeof (*a)
+#endif
 #define MAX_HANDLE_INFO_LIST 128
 
 /* Macro to avoid integer overflow */

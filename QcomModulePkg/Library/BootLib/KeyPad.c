@@ -66,7 +66,12 @@ GetKeyPress (UINT32 *KeyPressed)
     return Status;
   }
 
-  *KeyPressed = KeyData.Key.ScanCode;
+  if (KeyData.Key.ScanCode != SCAN_NULL) {
+    *KeyPressed = KeyData.Key.ScanCode;
+  }
+  else if (KeyData.Key.UnicodeChar == CHAR_CARRIAGE_RETURN) {
+    *KeyPressed = SCAN_SUSPEND;
+  }
 
   gBS->CloseProtocol (gST->ConsoleInHandle, &gEfiSimpleTextInputExProtocolGuid,
                       gImageHandle, NULL);

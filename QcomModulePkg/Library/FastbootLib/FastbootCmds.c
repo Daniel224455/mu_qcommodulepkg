@@ -459,8 +459,8 @@ STATIC VOID FastbootPublishSlotVars (VOID)
   GetPartitionCount (&PartitionCount);
   /*Scan through partition entries, populate the attributes*/
   for (i = 0, j = 0; i < PartitionCount && j < SlotCount; i++) {
-    UnicodeStrToAsciiStr (PtnEntries[i].PartEntry.PartitionName,
-                          PartitionNameAscii);
+    UnicodeStrToAsciiStrS (PtnEntries[i].PartEntry.PartitionName,
+                          PartitionNameAscii, MAX_GPT_NAME_SIZE);
 
     if (!(AsciiStrnCmp (PartitionNameAscii, "boot", AsciiStrLen ("boot")))) {
       Suffix = PartitionNameAscii + AsciiStrLen ("boot_");
@@ -508,7 +508,7 @@ STATIC VOID FastbootPublishSlotVars (VOID)
     }
   }
   FastbootPublishVar ("has-slot:boot", "yes");
-  UnicodeStrToAsciiStr (GetCurrentSlotSuffix ().Suffix, CurrentSlotFB);
+  UnicodeStrToAsciiStrS (GetCurrentSlotSuffix ().Suffix, CurrentSlotFB, MAX_GPT_NAME_SIZE);
 
   /* Here CurrentSlotFB will only have value of "_a" or "_b".*/
   SKIP_FIRSTCHAR_IN_SLOT_SUFFIX (CurrentSlotFB);
@@ -540,8 +540,8 @@ STATIC VOID PopulateMultislotMetadata (VOID)
   if (!InitialPopulate) {
     /*Traverse through partition entries,count matching slots with boot */
     for (i = 0; i < PartitionCount; i++) {
-      UnicodeStrToAsciiStr (PtnEntries[i].PartEntry.PartitionName,
-                            PartitionNameAscii);
+      UnicodeStrToAsciiStrS (PtnEntries[i].PartEntry.PartitionName,
+                            PartitionNameAscii, MAX_GPT_NAME_SIZE);
       if (!(AsciiStrnCmp (PartitionNameAscii, "boot", AsciiStrLen ("boot")))) {
         SlotCount++;
         Suffix = PartitionNameAscii + AsciiStrLen ("boot");
@@ -1028,7 +1028,7 @@ FastbootUpdateAttr (CONST CHAR16 *SlotSuffix)
   INT32 Index;
   CHAR16 PartName[MAX_GPT_NAME_SIZE];
   CHAR8 SlotSuffixAscii[MAX_SLOT_SUFFIX_SZ];
-  UnicodeStrToAsciiStr (SlotSuffix, SlotSuffixAscii);
+  UnicodeStrToAsciiStrS (SlotSuffix, SlotSuffixAscii, MAX_GPT_NAME_SIZE);
 
   StrnCpyS (PartName, StrLen ((CONST CHAR16 *)L"boot") + 1,
             (CONST CHAR16 *)L"boot", StrLen ((CONST CHAR16 *)L"boot"));
@@ -1175,7 +1175,7 @@ HandleUbiImgFlash (
     return Status;
   }
 
-  UnicodeStrToAsciiStr (PartitionName, PartitionNameAscii);
+  UnicodeStrToAsciiStrS (PartitionName, PartitionNameAscii, MAX_GPT_NAME_SIZE);
   Status = Ubi->UbiFlasherOpen (PartitionNameAscii,
                                 &UbiFlasherHandle,
                                 &UbiPageSize,
@@ -1284,7 +1284,7 @@ HandleMetaImgFlash (IN CHAR16 *PartitionName,
       DEBUG ((EFI_D_ERROR, "ptn_name string not terminated properly\n"));
       return EFI_INVALID_PARAMETER;
     }
-    AsciiStrToUnicodeStr (img_header_entry[i].ptn_name, PartitionNameFromMeta);
+    AsciiStrToUnicodeStrS (img_header_entry[i].ptn_name, PartitionNameFromMeta, MAX_GPT_NAME_SIZE);
 
     if (!IsUnlockCritical () &&
         IsCriticalPartition (PartitionNameFromMeta)) {
@@ -1732,7 +1732,7 @@ CmdFlash (IN CONST CHAR8 *arg, IN VOID *data, IN UINT32 sz)
     FastbootFail ("Invalid partition name");
     return;
   }
-  AsciiStrToUnicodeStr (arg, PartitionName);
+  AsciiStrToUnicodeStrS (arg, PartitionName, MAX_GPT_NAME_SIZE);
 
   if ((GetAVBVersion () == AVB_LE) ||
       ((GetAVBVersion () != AVB_LE) &&
@@ -2004,7 +2004,7 @@ CmdErase (IN CONST CHAR8 *arg, IN VOID *data, IN UINT32 sz)
     FastbootFail ("Invalid partition name");
     return;
   }
-  AsciiStrToUnicodeStr (arg, PartitionName);
+  AsciiStrToUnicodeStrS (arg, PartitionName, MAX_GPT_NAME_SIZE);
 
 
   if ((GetAVBVersion () == AVB_LE) ||
@@ -2137,12 +2137,12 @@ CmdSetActive (CONST CHAR8 *Arg, VOID *Data, UINT32 Size)
       return;
     }
     if (!AsciiStrStr (InputSlot, "_")) {
-      AsciiStrToUnicodeStr (InputSlot, InputSlotInUnicodetemp);
+      AsciiStrToUnicodeStrS (InputSlot, InputSlotInUnicodetemp, MAX_SLOT_SUFFIX_SZ);
       StrnCpyS (InputSlotInUnicode, MAX_SLOT_SUFFIX_SZ, L"_", StrLen (L"_"));
       StrnCatS (InputSlotInUnicode, MAX_SLOT_SUFFIX_SZ, InputSlotInUnicodetemp,
                 StrLen (InputSlotInUnicodetemp));
     } else {
-      AsciiStrToUnicodeStr (InputSlot, InputSlotInUnicode);
+      AsciiStrToUnicodeStrS (InputSlot, InputSlotInUnicode, MAX_SLOT_SUFFIX_SZ);
     }
 
     if ((AsciiStrLen (InputSlot) == MAX_SLOT_SUFFIX_SZ - 2) ||
@@ -2172,7 +2172,7 @@ CmdSetActive (CONST CHAR8 *Arg, VOID *Data, UINT32 Size)
   }
 
   // Updating fbvar `current-slot'
-  UnicodeStrToAsciiStr (GetCurrentSlotSuffix ().Suffix, CurrentSlotFB);
+  UnicodeStrToAsciiStrS (GetCurrentSlotSuffix ().Suffix, CurrentSlotFB, MAX_GPT_NAME_SIZE);
 
   /* Here CurrentSlotFB will only have value of "_a" or "_b".*/
   SKIP_FIRSTCHAR_IN_SLOT_SUFFIX (CurrentSlotFB);
@@ -2780,13 +2780,13 @@ CmdGetVar (CONST CHAR8 *Arg, VOID *Data, UINT32 Size)
         return;
       }
 
-      AsciiStrToUnicodeStr (Token, PartNameUniStr);
+      AsciiStrToUnicodeStrS (Token, PartNameUniStr, MAX_SLOT_SUFFIX_SZ);
 
       if (PartitionHasMultiSlot (PartNameUniStr)) {
         CurrentSlot = GetCurrentSlotSuffix ();
-        UnicodeStrToAsciiStr (CurrentSlot.Suffix, CurrentSlotAsc);
-        AsciiStrnCat ((CHAR8 *)Arg, CurrentSlotAsc,
-                      AsciiStrLen (CurrentSlotAsc));
+        UnicodeStrToAsciiStrS (CurrentSlot.Suffix, CurrentSlotAsc, MAX_GPT_NAME_SIZE);
+        AsciiStrnCatS ((CHAR8 *)Arg, AsciiStrLen (CurrentSlotAsc),
+                      CurrentSlotAsc, AsciiStrLen (CurrentSlotAsc));
       }
     }
   }
@@ -3490,7 +3490,7 @@ GetPartitionType (IN CHAR16 *PartName, OUT CHAR8 * PartType)
   /* By default copy raw to response */
   AsciiStrnCpyS (PartType, MAX_GET_VAR_NAME_SIZE,
                   RAW_FS_STR, AsciiStrLen (RAW_FS_STR));
-  UnicodeStrToAsciiStr (PartName, AsciiPartName);
+  UnicodeStrToAsciiStrS (PartName, AsciiPartName, MAX_GPT_NAME_SIZE);
 
   /* Mark partition type for hard-coded partitions only */
   for (LoopCounter = 0; LoopCounter < ARRAY_SIZE (part_info); LoopCounter++) {
@@ -3502,10 +3502,10 @@ GetPartitionType (IN CHAR16 *PartName, OUT CHAR8 * PartType)
       CheckPartitionFsSignature (PartName, &FsSignature);
       switch (FsSignature) {
         case EXT_FS_SIGNATURE:
-          AsciiStrnCpy (PartType, EXT_FS_STR, AsciiStrLen (EXT_FS_STR));
+          AsciiStrnCpyS (PartType, MAX_GPT_NAME_SIZE, EXT_FS_STR, AsciiStrLen (EXT_FS_STR));
           break;
         case F2FS_FS_SIGNATURE:
-          AsciiStrnCpy (PartType, F2FS_FS_STR, AsciiStrLen (F2FS_FS_STR));
+          AsciiStrnCpyS (PartType, MAX_GPT_NAME_SIZE, F2FS_FS_STR, AsciiStrLen (F2FS_FS_STR));
           break;
         case UNKNOWN_FS_SIGNATURE:
           /* Copy default hardcoded type in case unknown partition type */
@@ -3572,8 +3572,8 @@ PublishGetVarPartitionInfo (
     if (PartitionNameUniCode[0] == '\0') {
       continue;
     }
-    UnicodeStrToAsciiStr (PtnEntries[PtnLoopCount].PartEntry.PartitionName,
-                          (CHAR8 *)PublishedPartInfo[PtnLoopCount].part_name);
+    UnicodeStrToAsciiStrS (PtnEntries[PtnLoopCount].PartEntry.PartitionName,
+                          (CHAR8 *)PublishedPartInfo[PtnLoopCount].part_name, MAX_GPT_NAME_SIZE);
 
     /* Fill partition size variable and response string */
     AsciiStrnCpyS (PublishedPartInfo[PtnLoopCount].getvar_size_str,

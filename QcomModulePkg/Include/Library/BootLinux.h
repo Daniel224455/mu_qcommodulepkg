@@ -40,7 +40,6 @@
 #include <Library/DebugLib.h>
 #include <Library/DevicePathLib.h>
 #include <Library/DrawUI.h>
-#include <Library/EfiFileLib.h>
 #include <Library/IoLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/PcdLib.h>
@@ -203,8 +202,6 @@ LoadImageHeader (CHAR16 *Pname, VOID **ImageHdrBuffer, UINT32 *ImageHdrSize);
 EFI_STATUS
 LoadImage (CHAR16 *Pname, VOID **ImageBuffer,
            UINT32 ImageSizeActual, UINT32 PageSize);
-EFI_STATUS
-LaunchApp (IN UINT32 Argc, IN CHAR8 **Argv);
 BOOLEAN TargetBuildVariantUser (VOID);
 BOOLEAN IsLEVariant (VOID);
 BOOLEAN IsBuildAsSystemRootImage (VOID);

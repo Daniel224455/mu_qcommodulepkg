@@ -50,6 +50,7 @@
 */
 
 #include "AutoGen.h"
+#include <Library/MemoryAllocationLib.h>
 #include <Library/PrintLib.h>
 #include <Library/DebugLib.h>
 #include <libfdt_env.h>

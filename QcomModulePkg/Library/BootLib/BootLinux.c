@@ -305,7 +305,7 @@ CheckMDTPStatus (CHAR16 *PartitionName, BootInfo *Info)
     }
   }
 
-  UnicodeStrToAsciiStr (PartitionName, PartitionNameAscii);
+  UnicodeStrToAsciiStrS (PartitionName, PartitionNameAscii, MAX_GPT_NAME_SIZE);
   PartitionNameLen = AsciiStrLen (PartitionNameAscii);
   if (Info->MultiSlotBoot)
     PartitionNameLen -= (MAX_SLOT_SUFFIX_SZ - 1);

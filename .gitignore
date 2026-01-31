@@ -2,3 +2,5 @@ QcomModulePkg/__pycache__/
 Build/
 Conf/
 sectools/
+QcomModulePkg/Tools/elf_tools.pyc
+abl.elf

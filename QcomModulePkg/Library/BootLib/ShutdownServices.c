@@ -22,7 +22,6 @@
 #include <Guid/FileInfo.h>
 #include <Guid/GlobalVariable.h>
 #include <Library/ArmLib.h>
-#include <Library/BdsLib.h>
 #include <Library/DxeServicesTableLib.h>
 #include <Library/HobLib.h>
 #include <Library/LinuxLoaderLib.h>

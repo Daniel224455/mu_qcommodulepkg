@@ -210,7 +210,7 @@ NoAVBLoadReqImage (BootInfo *Info, VOID **DtboImage,
     Status = EFI_OUT_OF_RESOURCES;
     goto out;
   }
-  UnicodeStrToAsciiStr (Pname, AsciiPname);
+  UnicodeStrToAsciiStrS (Pname, AsciiPname, MAX_GPT_NAME_SIZE);
 
   AvbStatus = Ops->get_size_of_partition (Ops,
                                           AsciiPname,
@@ -348,7 +348,7 @@ NoAVBLoadVendorBootImage (BootInfo *Info)
     goto Err;
   }
 
-  UnicodeStrToAsciiStr (Pname, Info->Images[ImgIdx].Name);
+  UnicodeStrToAsciiStrS (Pname, Info->Images[ImgIdx].Name, MAX_GPT_NAME_SIZE);
   Info-> NumLoadedImages++;
 
   return EFI_SUCCESS;
@@ -477,7 +477,7 @@ LoadBootImageNoAuth (BootInfo *Info, UINT32 *PageSize, BOOLEAN *FastbootPath)
       Status = EFI_OUT_OF_RESOURCES;
       goto ErrImg;
     }
-    UnicodeStrToAsciiStr (Info->Pname, Info->Images[0].Name);
+    UnicodeStrToAsciiStrS (Info->Pname, Info->Images[0].Name, MAX_GPT_NAME_SIZE);
     Info->NumLoadedImages = 1;
   }
 
@@ -559,7 +559,7 @@ LoadImageNoAuth (BootInfo *Info)
       goto Err;
     }
 
-    UnicodeStrToAsciiStr (Pname, Info->Images[*ImgIdx].Name);
+    UnicodeStrToAsciiStrS (Pname, Info->Images[*ImgIdx].Name, MAX_GPT_NAME_SIZE);
     ++(*ImgIdx);
   }
 
@@ -650,7 +650,7 @@ LoadImageAndAuthVB1 (BootInfo *Info)
 
   AsciiStrnCpyS (StrPnameAscii, ARRAY_SIZE (StrPnameAscii), "/",
                  AsciiStrLen ("/"));
-  UnicodeStrToAsciiStr (Info->Pname, PnameAscii);
+  UnicodeStrToAsciiStrS (Info->Pname, PnameAscii, MAX_GPT_NAME_SIZE);
   if (Info->MultiSlotBoot) {
     AsciiStrnCatS (StrPnameAscii, ARRAY_SIZE (StrPnameAscii), PnameAscii,
                    AsciiStrLen (PnameAscii) - (MAX_SLOT_SUFFIX_SZ - 1));
@@ -1145,7 +1145,7 @@ LoadImageAndAuthVB2 (BootInfo *Info)
   UserData->IsMultiSlot = Info->MultiSlotBoot;
 
   if (Info->MultiSlotBoot) {
-    UnicodeStrToAsciiStr (Info->Pname, PnameAscii);
+    UnicodeStrToAsciiStrS (Info->Pname, PnameAscii, MAX_GPT_NAME_SIZE);
     if ((MAX_SLOT_SUFFIX_SZ + 1) > AsciiStrLen (PnameAscii)) {
       DEBUG ((EFI_D_ERROR, "ERROR: Can not determine slot suffix\n"));
       Status = EFI_INVALID_PARAMETER;

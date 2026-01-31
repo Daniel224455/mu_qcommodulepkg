@@ -399,6 +399,7 @@ MenuKeysHandler (IN EFI_EVENT Event, IN VOID *Context)
         MenuPagesAction[MenuInfo->Info.MenuType].Down_Action_Func (MenuInfo);
       break;
     case SCAN_SUSPEND:
+    case CHAR_CARRIAGE_RETURN:
       if (MenuPagesAction[MenuInfo->Info.MenuType].Enter_Action_Func != NULL)
         MenuPagesAction[MenuInfo->Info.MenuType].Enter_Action_Func (MenuInfo);
       break;

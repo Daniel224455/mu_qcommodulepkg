@@ -37,6 +37,7 @@
 #include "Board.h"
 #include "libfdt.h"
 #include "list.h"
+#include <Library/fdtcompat.h>
 #include <Library/BootLinux.h>
 #include <Library/DebugLib.h>
 #include <Library/MemoryAllocationLib.h>

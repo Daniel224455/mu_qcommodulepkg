@@ -490,7 +490,7 @@ QueryMemoryCellSize (IN VOID *Fdt, OUT UINT32 *MemoryCellLen)
       SizeCellSize == 0 ||
       AddrCellSize == 0) {
     DEBUG ((EFI_D_ERROR, "Error unsupported cell size value: #address-cell %d" \
-              "#size-cell\n", AddrCellSize, SizeCellSize));
+              "#size-cell %d\n", AddrCellSize, SizeCellSize));
     return EFI_INVALID_PARAMETER;
   }
 

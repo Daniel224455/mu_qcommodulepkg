@@ -487,8 +487,8 @@ UpdateCmdLineParams (UpdateCmdLineParamList *Param,
   if (Param->MultiSlotBoot &&
      !IsBootDevImage ()) {
      /* Slot suffix */
-    UnicodeStrToAsciiStr (GetCurrentSlotSuffix ().Suffix,
-                          Param->SlotSuffixAscii);
+    UnicodeStrToAsciiStrS (GetCurrentSlotSuffix ().Suffix,
+                          Param->SlotSuffixAscii, MAX_SLOT_SUFFIX_SZ);
     if (IsSystemdBootslotEnabled ()) {
       INT32 StrLen = 0;
       StrLen = AsciiStrLen (SystemdSlotEnv);

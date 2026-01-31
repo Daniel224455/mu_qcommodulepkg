@@ -389,9 +389,9 @@ GetFfbmCommand (CHAR8 *FfbmString, UINT32 Sz)
     !AsciiStrnCmp (FfbmData, Ffbm02Cmd, AsciiStrLen (Ffbm02Cmd))) {
     /* if ffbm-02 or qmmi string is in misc partition,
        then write qmmi to kernel cmd line*/
-    AsciiStrnCpy (FfbmString, QmmiCmd, AsciiStrLen (QmmiCmd));
+    AsciiStrnCpyS (FfbmString, Sz, QmmiCmd, AsciiStrLen (QmmiCmd));
   } else if (!AsciiStrnCmp (FfbmData, FfbmCmd, AsciiStrLen (FfbmCmd))) {
-    AsciiStrnCpy (FfbmString, FfbmData, Sz);
+    AsciiStrnCpyS (FfbmString, Sz, FfbmData, Sz);
   } else {
     Status = EFI_NOT_FOUND;
   }
