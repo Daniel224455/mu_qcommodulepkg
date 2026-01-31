@@ -40,7 +40,7 @@
   PLATFORM_GUID                  = 4476742F-4C2D-BA9D-992A-CB82914F5E58
   PLATFORM_VERSION               = 0.1
   DSC_SPECIFICATION              = 0x00010005
-  OUTPUT_DIRECTORY               = $(ABL_OUT_DIR)
+  OUTPUT_DIRECTORY               = Build/QcomModulePkg
   SUPPORTED_ARCHITECTURES        = ARM|AARCH64
   BUILD_TARGETS                  = DEBUG|RELEASE
   SKUID_IDENTIFIER               = DEFAULT
@@ -48,11 +48,10 @@
 
 [LibraryClasses.common]
   DebugLib|MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf
-  BaseStackCheckLib|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
   DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   BaseLib|MdePkg/Library/BaseLib/BaseLib.inf
-  BaseMemoryLib|ArmPkg/Library/BaseMemoryLibStm/BaseMemoryLibStm.inf
+  BaseMemoryLib|MdePkg/Library/BaseMemoryLib/BaseMemoryLib.inf
   PrintLib|MdePkg/Library/BasePrintLib/BasePrintLib.inf
   CacheMaintenanceLib|ArmPkg/Library/ArmCacheMaintenanceLib/ArmCacheMaintenanceLib.inf
   IoLib|MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsic.inf
@@ -65,9 +64,7 @@
   UefiApplicationEntryPoint|MdePkg/Library/UefiApplicationEntryPoint/UefiApplicationEntryPoint.inf
   PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
   FdtLib|EmbeddedPkg/Library/FdtLib/FdtLib.inf
-  LibUfdt|EmbeddedPkg/Library/LibUfdt/LibUfdt.inf
-  EfiFileLib|EmbeddedPkg/Library/EfiFileLib/EfiFileLib.inf
-  EblNetworkLib|EmbeddedPkg/Library/EblNetworkLib/EblNetworkLib.inf
+  LibUfdt|QcomModulePkg/Library/LibUfdt/LibUfdt.inf
   TimerLib|ArmPkg/Library/ArmArchTimerLib/ArmArchTimerLib.inf
   ArmGenericTimerCounterLib|ArmPkg/Library/ArmGenericTimerPhyCounterLib/ArmGenericTimerPhyCounterLib.inf
   Zlib|QcomModulePkg/Library/zlib/zlib.inf
@@ -79,76 +76,65 @@
   AvbLib|QcomModulePkg/Library/avb/AvbLib.inf
 
 [LibraryClasses.ARM]
-  ArmLib|ArmPkg/Library/ArmLib/ArmV7/ArmV7Lib.inf
+  ArmLib|ArmPkg/Library/ArmLib/ArmBaseLib.inf
   NULL|ArmPkg/Library/CompilerIntrinsicsLib/CompilerIntrinsicsLib.inf
 
 [LibraryClasses.AARCH64]
-  ArmLib|ArmPkg/Library/ArmLib/AArch64/AArch64Lib.inf
+  ArmLib|ArmPkg/Library/ArmLib/ArmBaseLib.inf
   NULL|ArmPkg/Library/CompilerIntrinsicsLib/CompilerIntrinsicsLib.inf
 
 [LibraryClasses.common.UEFI_APPLICATION]
-  ReportStatusCodeLib|IntelFrameworkModulePkg/Library/DxeReportStatusCodeLibFramework/DxeReportStatusCodeLib.inf
+  ReportStatusCodeLib|MdeModulePkg/Library/DxeReportStatusCodeLib/DxeReportStatusCodeLib.inf
   ExtractGuidedSectionLib|MdePkg/Library/DxeExtractGuidedSectionLib/DxeExtractGuidedSectionLib.inf
 
 [BuildOptions.common]
-  GCC:*_*_*_ARCHCC_FLAGS  = -Wno-shift-negative-value -fstack-protector-all -Wno-varargs -fno-common -Wno-misleading-indentation -Wno-unknown-warning-option
-  GCC:*_*_*_DLINK_FLAGS = -Ttext=0x0
-  GCC:*_*_*_CC_FLAGS = -DZ_SOLO
-  GCC:*_*_*_CC_FLAGS = -DPRODUCT_NAME=\"$(BOARD_BOOTLOADER_PRODUCT_NAME)\"
+  *_*_*_ARCHCC_FLAGS  = -Wno-shift-negative-value -fstack-protector-all -Wno-varargs -fno-common -Wno-misleading-indentation -Wno-unknown-warning-option
+  *_*_*_DLINK_FLAGS =
+  *_*_*_CC_FLAGS = -DZ_SOLO -O0
+  *_*_*_CC_FLAGS = -DPRODUCT_NAME=\"lahaina\"
+  *_*_*_CC_FLAGS = -DINIT_BIN=\"init\"
+  *_*_*_CC_FLAGS = -DUSERDATA_FS_TYPE=\"ext4\"
+  *_*_*_CC_FLAGS = -DDYNAMIC_PARTITION_SUPPORT
+  *_*_*_CC_FLAGS = -DENABLE_UPDATE_PARTITIONS_CMDS -DENABLE_BOOT_CMD -DENABLE_DEVICE_CRITICAL_LOCK_UNLOCK_CMDS
+  *_*_*_CC_FLAGS = -DVERIFIED_BOOT_2
 
   !if $(VERIFIED_BOOT)
-      GCC:*_*_*_CC_FLAGS = -DVERIFIED_BOOT
-  !endif
-  !if $(VERIFIED_BOOT_2)
-      GCC:*_*_*_CC_FLAGS = -DVERIFIED_BOOT_2
+      *_*_*_CC_FLAGS = -DVERIFIED_BOOT
   !endif
   !if $(VERIFIED_BOOT_LE)
-      GCC:*_*_*_CC_FLAGS = -DVERIFIED_BOOT_LE
+      *_*_*_CC_FLAGS = -DVERIFIED_BOOT_LE
   !endif
   !if $(AB_RETRYCOUNT_DISABLE)
-      GCC:*_*_*_CC_FLAGS = -DAB_RETRYCOUNT_DISABLE
+      *_*_*_CC_FLAGS = -DAB_RETRYCOUNT_DISABLE
   !endif
   !if $(TARGET_BOARD_TYPE_AUTO) == 1
-      GCC:*_*_*_CC_FLAGS = -DTARGET_BOARD_TYPE_AUTO
+      *_*_*_CC_FLAGS = -DTARGET_BOARD_TYPE_AUTO
   !endif
   !if $(VERITY_LE)
-      GCC:*_*_*_CC_FLAGS = -DVERITY_LE
-  !endif
-  !if $(USER_BUILD_VARIANT) == 0
-      GCC:*_*_*_CC_FLAGS = -DENABLE_UPDATE_PARTITIONS_CMDS -DENABLE_BOOT_CMD -DENABLE_DEVICE_CRITICAL_LOCK_UNLOCK_CMDS
-  !else
-      GCC:*_*_*_CC_FLAGS = -DUSER_BUILD_VARIANT
+      *_*_*_CC_FLAGS = -DVERITY_LE
   !endif
   !if $(ENABLE_LE_VARIANT) == 1
-      GCC:*_*_*_CC_FLAGS = -DENABLE_LE_VARIANT
+      *_*_*_CC_FLAGS = -DENABLE_LE_VARIANT
   !endif
   !if $(BUILD_SYSTEM_ROOT_IMAGE)
-      GCC:*_*_*_CC_FLAGS = -DBUILD_SYSTEM_ROOT_IMAGE
+      *_*_*_CC_FLAGS = -DBUILD_SYSTEM_ROOT_IMAGE
   !endif
   !if $(DISABLE_PARALLEL_DOWNLOAD_FLASH) == 1
-      GCC:*_*_*_CC_FLAGS = -DDISABLE_PARALLEL_DOWNLOAD_FLASH
-  !endif
-  !if $(DYNAMIC_PARTITION_SUPPORT)
-      GCC:*_*_*_CC_FLAGS = -DDYNAMIC_PARTITION_SUPPORT
+      *_*_*_CC_FLAGS = -DDISABLE_PARALLEL_DOWNLOAD_FLASH
   !endif
   !if $(VIRTUAL_AB_OTA)
-      GCC:*_*_*_CC_FLAGS = -DVIRTUAL_AB_OTA
+      *_*_*_CC_FLAGS = -DVIRTUAL_AB_OTA
   !endif
   !if $(BUILD_USES_RECOVERY_AS_BOOT)
-      GCC:*_*_*_CC_FLAGS = -DBUILD_USES_RECOVERY_AS_BOOT
-  !endif
-  !ifdef $(INIT_BIN)
-      GCC:*_*_*_CC_FLAGS = -DINIT_BIN='$(INIT_BIN)'
+      *_*_*_CC_FLAGS = -DBUILD_USES_RECOVERY_AS_BOOT
   !endif
   !if $(NAND_SQUASHFS_SUPPORT)
-      GCC:*_*_*_CC_FLAGS = -DNAND_SQUASHFS_SUPPORT
+      *_*_*_CC_FLAGS = -DNAND_SQUASHFS_SUPPORT
   !endif
   !if $(ENABLE_SYSTEMD_BOOTSLOT)
-      GCC:*_*_*_CC_FLAGS = -DENABLE_SYSTEMD_BOOTSLOT
+      *_*_*_CC_FLAGS = -DENABLE_SYSTEMD_BOOTSLOT
   !endif
-  !if $(USERDATAIMAGE_FILE_SYSTEM_TYPE)
-      GCC:*_*_*_CC_FLAGS = -DUSERDATA_FS_TYPE=\"$(USERDATAIMAGE_FILE_SYSTEM_TYPE)\"
-  !endif
+
 
 [PcdsFixedAtBuild.common]
 
@@ -159,9 +145,9 @@
 # ASSERT_BREAKPOINT_ENABLED  0x10
 # ASSERT_DEADLOOP_ENABLED    0x20
 
-  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x2f
-  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000042
-  gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x06
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x3f
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0xFFFFFFFF
+  gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x0f
 
 ################################################################################
 #
@@ -172,9 +158,22 @@
 
 	QcomModulePkg/Application/LinuxLoader/LinuxLoader.inf {
 		<LibraryClasses>
+			DxeServicesTableLib|MdePkg/Library/DxeServicesTableLib/DxeServicesTableLib.inf
+			UefiLib|MdePkg/Library/UefiLib/UefiLib.inf
+			UefiApplicationEntryPoint|MdePkg/Library/UefiApplicationEntryPoint/UefiApplicationEntryPoint.inf
+			CacheMaintenanceLib|ArmPkg/Library/ArmCacheMaintenanceLib/ArmCacheMaintenanceLib.inf
+			Zlib|QcomModulePkg/Library/zlib/zlib.inf
+			ArmLib|ArmPkg/Library/ArmLib/ArmBaseLib.inf
+			BaseLib|MdePkg/Library/BaseLib/BaseLib.inf
+			DebugLib|MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf
+			DevicePathLib|MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.inf
+			HobLib|MdePkg/Library/DxeHobLib/DxeHobLib.inf
+			PerformanceLib|MdeModulePkg/Library/DxePerformanceLib/DxePerformanceLib.inf
+			DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
+
 			FdtLib|EmbeddedPkg/Library/FdtLib/FdtLib.inf
-			LibUfdt|EmbeddedPkg/Library/LibUfdt/LibUfdt.inf
-			ArmSmcLib|ArmPkg/Library/ArmSmcLib/ArmSmcLib.inf
+			LibUfdt|QcomModulePkg/Library/LibUfdt/LibUfdt.inf
+			ArmSmcLib|MdePkg/Library/ArmSmcLib/ArmSmcLib.inf
 			BootLib|QcomModulePkg/Library/BootLib/BootLib.inf
 			StackCanary|QcomModulePkg/Library/StackCanary/StackCanary.inf
 			FastbootLib|QcomModulePkg/Library/FastbootLib/FastbootLib.inf
